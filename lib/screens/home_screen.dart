@@ -17,69 +17,88 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
-        child: Column(
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      // header
+      Container(
+        width: width,
+        height: height * 0.3,
+        color: Colors.green,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //header
-              Container(
-                width: width ,
-                height: height * 0.3,
-                color: Colors.green,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                     Text(
-                    'Welcome, $username!',
-                    style: TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text("Here's your activity summary for today.",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                    ],
-                    
-                  )
+              Text(
+                'Welcome, $username!',
+                style: TextStyle(
+                  fontSize: 42,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-
-              //content
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Today\'s Summary',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.check_circle, color: Colors.green),
-                        title: Text('Completed Tasks'),
-                        trailing: Text('5'),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.pending, color: Colors.orange),
-                        title: Text('Pending Tasks'),
-                        trailing: Text('3'),
-                      ),
-                    ),
+              Text(
+                "Here's your activity summary for today.",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ],
-          ))],
+          ),
         ),
-      ));
+      ),
+
+      SizedBox(height: 16), // spacing
+
+      // content row
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            width: width * 0.4,
+            height: height * 0.2,
+            color: Colors.lightGreen,
+            child: Center(
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Plants Watered: 3',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'New Tasks: 2',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            width: width * 0.4,
+            height: height * 0.2,
+            color: Colors.lightGreen,
+            child: Center(
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Water Usage: 12L',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Light Exposure: 6h',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+    );
   }
 }
