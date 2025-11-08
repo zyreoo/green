@@ -98,6 +98,11 @@ firebase_app_id_file.json
 *.seed
 *.pid.lock
 
+
+# Android generated resources
+android/app/src/main/res/drawable*/launch_background.xml
+
+
 # Coverage reports
 coverage/
 
