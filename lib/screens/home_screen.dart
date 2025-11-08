@@ -96,6 +96,68 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+
+      SizedBox(height: 16),
+
+      // Articles section
+      Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text("Articles", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+        SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              width: width * 0.6,
+              height: height * 0.25,
+              margin: EdgeInsets.all(8),
+              color: Colors.greenAccent,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Caring for Your Indoor Plants',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Learn the best practices for watering, lighting, and maintaining your indoor plants to keep them healthy and thriving.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              width: width * 0.6,
+              height: height * 0.25,
+              margin: EdgeInsets.all(8),
+              color: Colors.greenAccent,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Top 10 Low-Maintenance Plants',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Discover a selection of low-maintenance plants that are perfect for busy individuals or those new to plant care.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      ]),
+      )]
+      )
     ],
   ),
 ),
