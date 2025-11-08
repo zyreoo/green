@@ -73,10 +73,10 @@ final List<Widget> _pages = [
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.monitor), label: '3D Monitor'),
-          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',backgroundColor: Colors.black),
+          BottomNavigationBarItem(icon: Icon(Icons.monitor), label: '3D Monitor',backgroundColor: Colors.black),
+          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks', backgroundColor: Colors.black),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile",backgroundColor: Colors.black),
         ],
       ),
     ); 
