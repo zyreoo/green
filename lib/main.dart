@@ -4,8 +4,14 @@ import 'package:green/screens/profile.dart';
 import 'package:green/screens/tasks.dart';
 import 'screens/home_screen.dart';
 import 'dart:developer';
+import 'package:camera/camera.dart';
 
-void main() {
+
+List<CameraDescription>? cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   runApp(const MyApp());
 }
 
@@ -16,11 +22,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Green',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'An App for a Greener Future'),
     );
   }
 }
@@ -31,23 +37,6 @@ class MyHomePage extends StatefulWidget {
   final String title;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class ScreenSize extends StatelessWidget {
-  const ScreenSize({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-
-    return Scaffold(
-      body: Center(
-        child: Text('Width: $width, Height: $height'),
-      ),
-    );
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -81,6 +70,5 @@ final List<Widget> _pages = [
       ),
     ); 
     }
-
   
 }
