@@ -108,3 +108,6 @@ coverage/
 
 # Generated test mocks
 test/**.mock.dart
+server/mediapipe-env/
+server/.venv/
+server/__pycache__/
