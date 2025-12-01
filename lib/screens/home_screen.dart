@@ -12,15 +12,12 @@ class HomeScreen extends StatelessWidget {
 
     double width = MediaQuery.sizeOf(context).width;
     double height = MediaQuery.sizeOf(context).height;
-
-
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
   child: Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      // header
       Container(
         width: width,
         height: height * 0.3,
@@ -46,9 +43,8 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      SizedBox(height: 16), // spacing
+      SizedBox(height: 16),
 
-      // content row
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

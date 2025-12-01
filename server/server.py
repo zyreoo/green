@@ -19,7 +19,6 @@ app.add_middleware(
 )
 
 
-
 mp_hands = mp.solutions.hands
 
 hands = mp_hands.Hands(static_image_mode=True,
@@ -28,11 +27,7 @@ hands = mp_hands.Hands(static_image_mode=True,
 
 
 @app.post("/hand")
-
-
-
-async def detect_hand(file: UploadFile = File(...)):
-
+async def detect_hand(image: UploadFile = File(...)):
     img_bytes = await image.read()
 
     nparr = np.frombuffer(img_bytes, np.uint8)

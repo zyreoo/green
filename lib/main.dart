@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:green/screens/3dMonitor.dart';
+import 'package:green/screens/3d_monitor.dart';
 import 'package:green/screens/profile.dart';
 import 'package:green/screens/tasks.dart';
 import 'screens/home_screen.dart';
 import 'dart:developer';
 import 'package:camera/camera.dart';
-
 
 List<CameraDescription>? cameras;
 
@@ -17,7 +16,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedpage = 0;
 
-final List<Widget> _pages = [
-  HomeScreen(), 
-  Monitor3D(), 
-  Tasks(),
-  Profile()
-];
+  final List<Widget> _pages = [HomeScreen(), Monitor3D(), Tasks(), Profile()];
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +55,28 @@ final List<Widget> _pages = [
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',backgroundColor: Colors.black),
-          BottomNavigationBarItem(icon: Icon(Icons.monitor), label: '3D Monitor',backgroundColor: Colors.black),
-          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks', backgroundColor: Colors.black),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile",backgroundColor: Colors.black),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.black,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.monitor),
+            label: '3D Monitor',
+            backgroundColor: Colors.black,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.task),
+            label: 'Tasks',
+            backgroundColor: Colors.black,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+            backgroundColor: Colors.black,
+          ),
         ],
       ),
-    ); 
-    }
-  
+    );
+  }
 }
