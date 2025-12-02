@@ -93,79 +93,104 @@ class _Monitor3DState extends State<Monitor3D> {
   }
 
   Future<String> _sendImage(Uint8List bytes, String name) async {
-    final request = http.MultipartRequest('POST', _serverEndpoint('/hand'));
+    final endpoint = _serverEndpoint('/hand');
+    print('DEBUG: Sending request to: $endpoint');
+    print('DEBUG: Server base URL: $_serverBaseUrl');
+
+    final request = http.MultipartRequest('POST', endpoint);
     request.files.add(
       http.MultipartFile.fromBytes('image', bytes, filename: name),
     );
 
-    final response = await request.send();
-    final responseString = await response.stream.bytesToString();
-
     try {
-      final decoded = jsonDecode(responseString);
-      if (decoded is Map) {
-        final handRaw = decoded['hand_landmarks'] as List?;
-        final faceRaw = decoded['face_landmarks'] as List?;
-        final handPoints =
-            handRaw
-                ?.whereType<Map>()
-                .map(
-                  (lm) => HandLandmark(
-                    x: (lm['x'] as num?)?.toDouble() ?? 0,
-                    y: (lm['y'] as num?)?.toDouble() ?? 0,
-                    z: (lm['z'] as num?)?.toDouble() ?? 0,
-                  ),
-                )
-                .toList(growable: false) ??
-            const [];
-        final facePoints =
-            faceRaw
-                ?.whereType<Map>()
-                .map(
-                  (lm) => FaceLandmark(
-                    x: (lm['x'] as num?)?.toDouble() ?? 0,
-                    y: (lm['y'] as num?)?.toDouble() ?? 0,
-                    z: (lm['z'] as num?)?.toDouble() ?? 0,
-                  ),
-                )
-                .toList(growable: false) ??
-            const [];
+      final response = await request.send();
+      print('DEBUG: Response status: ${response.statusCode}');
 
-        if (handPoints.isNotEmpty || facePoints.isNotEmpty) {
-          setState(() {
-            _handLandmarks = handPoints;
-            _faceLandmarks = facePoints;
-            _statusMessage =
-                'Hands: ${handPoints.length} pts • Face: ${facePoints.length} pts';
-            final frameString = decoded['frame'] as String?;
-            _annotatedFrame = frameString != null && frameString.isNotEmpty
-                ? base64Decode(frameString)
-                : null;
-          });
-          return 'Frame processed';
-        }
-
-        final message = decoded['message'] as String?;
-        if (message != null) {
-          setState(() {
-            _handLandmarks = const [];
-            _faceLandmarks = const [];
-            _annotatedFrame = null;
-            _statusMessage = message;
-          });
-          return message;
-        }
+      if (response.statusCode != 200) {
+        final errorBody = await response.stream.bytesToString();
+        print('DEBUG: Error response: $errorBody');
+        throw Exception('Server returned ${response.statusCode}: $errorBody');
       }
-    } catch (_) {}
 
-    setState(() {
-      _handLandmarks = const [];
-      _faceLandmarks = const [];
-      _statusMessage = responseString;
-      _annotatedFrame = null;
-    });
+      final responseString = await response.stream.bytesToString();
 
-    return responseString;
+      try {
+        final decoded = jsonDecode(responseString);
+        if (decoded is Map) {
+          final handRaw = decoded['hand_landmarks'] as List?;
+          final faceRaw = decoded['face_landmarks'] as List?;
+          final handPoints =
+              handRaw
+                  ?.whereType<Map>()
+                  .map(
+                    (lm) => HandLandmark(
+                      x: (lm['x'] as num?)?.toDouble() ?? 0,
+                      y: (lm['y'] as num?)?.toDouble() ?? 0,
+                      z: (lm['z'] as num?)?.toDouble() ?? 0,
+                    ),
+                  )
+                  .toList(growable: false) ??
+              const [];
+          final facePoints =
+              faceRaw
+                  ?.whereType<Map>()
+                  .map(
+                    (lm) => FaceLandmark(
+                      x: (lm['x'] as num?)?.toDouble() ?? 0,
+                      y: (lm['y'] as num?)?.toDouble() ?? 0,
+                      z: (lm['z'] as num?)?.toDouble() ?? 0,
+                    ),
+                  )
+                  .toList(growable: false) ??
+              const [];
+
+          if (handPoints.isNotEmpty || facePoints.isNotEmpty) {
+            setState(() {
+              _handLandmarks = handPoints;
+              _faceLandmarks = facePoints;
+              _statusMessage =
+                  'Hands: ${handPoints.length} pts • Face: ${facePoints.length} pts';
+              final frameString = decoded['frame'] as String?;
+              _annotatedFrame = frameString != null && frameString.isNotEmpty
+                  ? base64Decode(frameString)
+                  : null;
+            });
+            return 'Frame processed';
+          }
+
+          final message = decoded['message'] as String?;
+          if (message != null) {
+            setState(() {
+              _handLandmarks = const [];
+              _faceLandmarks = const [];
+              _annotatedFrame = null;
+              _statusMessage = message;
+            });
+            return message;
+          }
+        }
+      } catch (e) {
+        print('DEBUG: JSON decode exception: $e');
+      }
+
+      setState(() {
+        _handLandmarks = const [];
+        _faceLandmarks = const [];
+        _statusMessage = responseString;
+        _annotatedFrame = null;
+      });
+
+      return responseString;
+    } catch (e) {
+      print('DEBUG: Network exception: $e');
+      setState(() {
+        _handLandmarks = const [];
+        _faceLandmarks = const [];
+        _statusMessage = 'Network error: $e';
+        _annotatedFrame = null;
+      });
+      return 'Network error: $e';
+    }
   }
 
   Future<void> _turnOnCamera() async {
