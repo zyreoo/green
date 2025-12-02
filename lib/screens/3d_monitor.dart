@@ -12,12 +12,22 @@ const _serverBaseUrl = String.fromEnvironment(
 );
 
 Uri _serverEndpoint(String pathSegment) {
-  final normalizedBase = _serverBaseUrl.endsWith('/')
-      ? _serverBaseUrl.substring(0, _serverBaseUrl.length - 1)
-      : _serverBaseUrl;
+  // Ensure the base URL has a protocol (http:// or https://)
+  String baseUrl = _serverBaseUrl.trim();
+  if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+    baseUrl = 'https://$baseUrl';
+  }
+
+  // Remove trailing slash from base URL
+  final normalizedBase = baseUrl.endsWith('/')
+      ? baseUrl.substring(0, baseUrl.length - 1)
+      : baseUrl;
+
+  // Ensure path starts with /
   final normalizedPath = pathSegment.startsWith('/')
       ? pathSegment
       : '/$pathSegment';
+
   return Uri.parse('$normalizedBase$normalizedPath');
 }
 
