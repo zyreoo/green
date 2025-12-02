@@ -6,6 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 
+const _serverBaseUrl = String.fromEnvironment(
+  'SERVER_BASE_URL',
+  defaultValue: 'http://localhost:8000',
+);
+
+Uri _serverEndpoint(String pathSegment) {
+  final normalizedBase = _serverBaseUrl.endsWith('/')
+      ? _serverBaseUrl.substring(0, _serverBaseUrl.length - 1)
+      : _serverBaseUrl;
+  final normalizedPath = pathSegment.startsWith('/')
+      ? pathSegment
+      : '/$pathSegment';
+  return Uri.parse('$normalizedBase$normalizedPath');
+}
+
 class Monitor3D extends StatefulWidget {
   const Monitor3D({super.key, this.onRequestHome});
 
@@ -78,10 +93,7 @@ class _Monitor3DState extends State<Monitor3D> {
   }
 
   Future<String> _sendImage(Uint8List bytes, String name) async {
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://localhost:8000/hand'),
-    );
+    final request = http.MultipartRequest('POST', _serverEndpoint('/hand'));
     request.files.add(
       http.MultipartFile.fromBytes('image', bytes, filename: name),
     );
@@ -94,7 +106,8 @@ class _Monitor3DState extends State<Monitor3D> {
       if (decoded is Map) {
         final handRaw = decoded['hand_landmarks'] as List?;
         final faceRaw = decoded['face_landmarks'] as List?;
-        final handPoints = handRaw
+        final handPoints =
+            handRaw
                 ?.whereType<Map>()
                 .map(
                   (lm) => HandLandmark(
@@ -105,7 +118,8 @@ class _Monitor3DState extends State<Monitor3D> {
                 )
                 .toList(growable: false) ??
             const [];
-        final facePoints = faceRaw
+        final facePoints =
+            faceRaw
                 ?.whereType<Map>()
                 .map(
                   (lm) => FaceLandmark(
@@ -124,8 +138,9 @@ class _Monitor3DState extends State<Monitor3D> {
             _statusMessage =
                 'Hands: ${handPoints.length} pts • Face: ${facePoints.length} pts';
             final frameString = decoded['frame'] as String?;
-            _annotatedFrame =
-                frameString != null && frameString.isNotEmpty ? base64Decode(frameString) : null;
+            _annotatedFrame = frameString != null && frameString.isNotEmpty
+                ? base64Decode(frameString)
+                : null;
           });
           return 'Frame processed';
         }
@@ -224,13 +239,13 @@ class _Monitor3DState extends State<Monitor3D> {
   @override
   Widget build(BuildContext context) {
     final headline = Theme.of(context).textTheme.headlineMedium?.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
-        );
-    final subtitle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Colors.white70,
-        );
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.5,
+    );
+    final subtitle = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(color: Colors.white70);
     final isCompact = MediaQuery.of(context).size.width < 700;
 
     return Scaffold(
@@ -246,18 +261,18 @@ class _Monitor3DState extends State<Monitor3D> {
                   : _buildIdleLayout(headline, subtitle, isCompact),
             ),
             if (isCompact)
-              Positioned(
-                right: 16,
-                top: 12,
-                child: _buildCompactHomeButton(),
-              ),
+              Positioned(right: 16, top: 12, child: _buildCompactHomeButton()),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildActiveLayout(TextStyle? headline, TextStyle? subtitle, bool compact) {
+  Widget _buildActiveLayout(
+    TextStyle? headline,
+    TextStyle? subtitle,
+    bool compact,
+  ) {
     final horizontal = compact ? 16.0 : 24.0;
     final vertical = compact ? 16.0 : 20.0;
 
@@ -276,14 +291,17 @@ class _Monitor3DState extends State<Monitor3D> {
               const SizedBox(height: 24),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final allowSideBySide = !compact && constraints.maxWidth > 900;
+                  final allowSideBySide =
+                      !compact && constraints.maxWidth > 900;
                   if (allowSideBySide) {
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: _buildCameraCard(subtitle, compact)),
                         const SizedBox(width: 24),
-                        Expanded(child: _buildUnifiedMeshCard(subtitle, compact)),
+                        Expanded(
+                          child: _buildUnifiedMeshCard(subtitle, compact),
+                        ),
                       ],
                     );
                   }
@@ -301,7 +319,10 @@ class _Monitor3DState extends State<Monitor3D> {
               const SizedBox(height: 16),
               if (_statusMessage != null)
                 _buildGlassSurface(
-                  padding: EdgeInsets.symmetric(horizontal: compact ? 12 : 16, vertical: 12),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: compact ? 12 : 16,
+                    vertical: 12,
+                  ),
                   borderRadius: compact ? 22 : 26,
                   child: Text(
                     _statusMessage!,
@@ -331,7 +352,10 @@ class _Monitor3DState extends State<Monitor3D> {
             children: [
               Text(
                 'Camera Feed',
-                style: subtitle?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                style: subtitle?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Icon(Icons.circle, color: Colors.redAccent, size: 12),
             ],
@@ -353,7 +377,9 @@ class _Monitor3DState extends State<Monitor3D> {
                       child: CameraPreview(_controller!),
                     );
                   }
-                  return const Center(child: CircularProgressIndicator.adaptive());
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
                 },
               ),
             ),
@@ -393,16 +419,16 @@ class _Monitor3DState extends State<Monitor3D> {
               onPanUpdate: _handleRotationDrag,
               child: SizedBox(
                 height: compact ? 260 : 320,
-                  child: _handLandmarks.isNotEmpty || _faceLandmarks.isNotEmpty
-                      ? CombinedMeshView(
-                          handLandmarks: _handLandmarks,
-                          faceLandmarks: _faceLandmarks,
-                          rotationX: _rotationX,
-                          rotationY: _rotationY,
-                        )
+                child: _handLandmarks.isNotEmpty || _faceLandmarks.isNotEmpty
+                    ? CombinedMeshView(
+                        handLandmarks: _handLandmarks,
+                        faceLandmarks: _faceLandmarks,
+                        rotationX: _rotationX,
+                        rotationY: _rotationY,
+                      )
                     : Center(
                         child: Text(
-                            'Show your hand or face to capture a mesh',
+                          'Show your hand or face to capture a mesh',
                           style: subtitle,
                         ),
                       ),
@@ -421,11 +447,19 @@ class _Monitor3DState extends State<Monitor3D> {
       ),
     );
   }
-  Widget _buildIdleLayout(TextStyle? headline, TextStyle? subtitle, bool compact) {
+
+  Widget _buildIdleLayout(
+    TextStyle? headline,
+    TextStyle? subtitle,
+    bool compact,
+  ) {
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: compact ? 16 : 24, vertical: compact ? 32 : 40),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 16 : 24,
+          vertical: compact ? 32 : 40,
+        ),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: compact ? 400 : 460),
           child: _buildGlassSurface(
@@ -514,10 +548,7 @@ class _Monitor3DState extends State<Monitor3D> {
             child: _annotatedFrame != null
                 ? AspectRatio(
                     aspectRatio: aspect,
-                    child: Image.memory(
-                      _annotatedFrame!,
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.memory(_annotatedFrame!, fit: BoxFit.cover),
                   )
                 : AspectRatio(
                     aspectRatio: aspect,
@@ -541,7 +572,11 @@ class _Monitor3DState extends State<Monitor3D> {
     );
   }
 
-  Widget _buildHeaderRow(TextStyle? headline, TextStyle? subtitle, bool compact) {
+  Widget _buildHeaderRow(
+    TextStyle? headline,
+    TextStyle? subtitle,
+    bool compact,
+  ) {
     if (compact) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -631,7 +666,6 @@ class _Monitor3DState extends State<Monitor3D> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-
           const SizedBox(height: 12),
           FilledButton.tonalIcon(
             onPressed: _liveMode ? _stopLiveStream : _startLiveStream,
@@ -783,10 +817,15 @@ class CombinedMeshPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     for (final pair in _handConnections) {
-      if (pair[0] >= projectedHands.length || pair[1] >= projectedHands.length) {
+      if (pair[0] >= projectedHands.length ||
+          pair[1] >= projectedHands.length) {
         continue;
       }
-      canvas.drawLine(projectedHands[pair[0]], projectedHands[pair[1]], handConnectionPaint);
+      canvas.drawLine(
+        projectedHands[pair[0]],
+        projectedHands[pair[1]],
+        handConnectionPaint,
+      );
     }
 
     final handJointPaint = Paint()
