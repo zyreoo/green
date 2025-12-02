@@ -45,11 +45,19 @@ jobs:
           BASE_HREF: "/${{ github.event.repository.name }}/"
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
         run: |
+          echo "Building with base-href: $BASE_HREF"
           EXTRA_FLAGS=""
           if [ -n "$SERVER_BASE_URL" ]; then
+            echo "Using SERVER_BASE_URL from secret"
             EXTRA_FLAGS="$EXTRA_FLAGS --dart-define=SERVER_BASE_URL=$SERVER_BASE_URL"
+          else
+            echo "WARNING: SERVER_BASE_URL secret not set, using default localhost:8000"
           fi
           flutter build web --release --base-href "$BASE_HREF" $EXTRA_FLAGS
+
+      - name: Create 404.html for GitHub Pages routing
+        run: |
+          cp build/web/index.html build/web/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
