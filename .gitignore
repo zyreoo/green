@@ -81,7 +81,6 @@ linux/flutter/ephemeral/
 *.so
 
 # Web
-lib/generated_plugin_registrant.dart
 
 # Firebase / Google services
 google-services.json

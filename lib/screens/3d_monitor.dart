@@ -631,6 +631,8 @@ class _Monitor3DState extends State<Monitor3D> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+
+          const SizedBox(height: 12),
           FilledButton.tonalIcon(
             onPressed: _liveMode ? _stopLiveStream : _startLiveStream,
             icon: Icon(_liveMode ? Icons.stop : Icons.play_arrow),
@@ -650,6 +652,7 @@ class _Monitor3DState extends State<Monitor3D> {
 
     return Row(
       children: [
+        const SizedBox(width: 12),
         Expanded(
           child: FilledButton.tonalIcon(
             onPressed: _liveMode ? _stopLiveStream : _startLiveStream,
