@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:green/screens/3d_monitor.dart';
-import 'package:green/screens/profile.dart';
-import 'package:green/screens/tasks.dart';
 import 'screens/home_screen.dart';
 import 'dart:developer';
 import 'package:camera/camera.dart';
@@ -39,41 +37,52 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedpage = 0;
+  late final List<Widget> _pages;
 
-  final List<Widget> _pages = [HomeScreen(), Monitor3D(), Tasks(), Profile()];
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomeScreen(
+        key: ValueKey('home_screen'),
+      ),
+      Monitor3D(
+        key: const ValueKey('monitor_screen'),
+        onRequestHome: () {
+          setState(() {
+            _selectedpage = 0;
+          });
+        },
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedpage],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedpage,
-        onTap: (int index) {
-          log("tapped");
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 350),
+        child: _pages[_selectedpage],
+      ),
+      bottomNavigationBar: NavigationBar(
+        height: 70,
+        selectedIndex: _selectedpage,
+        onDestinationSelected: (int index) {
+          log('tab changed -> $index');
           setState(() {
             _selectedpage = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: Colors.black,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.monitor),
-            label: '3D Monitor',
-            backgroundColor: Colors.black,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.task),
-            label: 'Tasks',
-            backgroundColor: Colors.black,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-            backgroundColor: Colors.black,
+          NavigationDestination(
+            icon: Icon(Icons.graphic_eq_outlined),
+            selectedIcon: Icon(Icons.monitor),
+            label: 'See You in 3D',
           ),
         ],
       ),
