@@ -39,6 +39,14 @@ face_mesh = mp_face_mesh.FaceMesh(
 )
 
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "FastAPI server is running"}
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
 @app.post("/hand")
 async def detect_hand(image: UploadFile = File(...)):
     img_bytes = await image.read()
